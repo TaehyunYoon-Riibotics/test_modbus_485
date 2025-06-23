@@ -44,8 +44,8 @@ target_link_libraries(modbus_slave
   PRIVATE modbus_utils
 )
 
-add_executable(serial_can_test src/serial_can_test.cpp)
-target_link_libraries(serial_can_test PRIVATE modbus_utils)
+add_executable(serial_modbus_master src/serial_modbus_master.cpp)
+target_link_libraries(serial_modbus_master PRIVATE modbus_utils)
 
-add_executable(serial_can_recv src/serial_can_recv.cpp)
-target_link_libraries(serial_can_recv PRIVATE modbus_utils)
+add_executable(serial_modbus_slave src/serial_modbus_slave.cpp)
+target_link_libraries(serial_modbus_slave PRIVATE modbus_utils)

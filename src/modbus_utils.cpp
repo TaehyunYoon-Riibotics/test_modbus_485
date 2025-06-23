@@ -2,7 +2,6 @@
 
 namespace test_modbus_485 {
 
-// ctx 유효성 + 에러 출력
 bool ModbusUtils::ensureCtx(modbus_t* ctx, const char* fn) {
   if (!ctx) {
     std::cerr << "[" << fn << "] null context\n";

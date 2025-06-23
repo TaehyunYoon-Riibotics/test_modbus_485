@@ -1,15 +1,13 @@
-// src/modbus_slave.cpp
-
 #include "modbus_utils.h"
+
 #include <iostream>
 #include <cassert>
 #include <cstdint>
 
 int main() {
-  const char* device   = "/dev/ttyS0";  // 사용할 포트
-  const int   slave_id = 1;             // 슬레이브 ID
+  const char* device   = "/dev/ttyS0";
+  const int   slave_id = 1;
 
-  // 1) ModbusUtils로 RTU 컨텍스트 열기
   test_modbus_485::ModbusUtils mb;
   modbus_t* ctx = nullptr;
   if (!mb.openRTU(ctx, device, 115200, 'N', 8, 1, slave_id)) {
@@ -17,7 +15,6 @@ int main() {
     return 1;
   }
 
-  // 2) 레지스터 맵(100개) 생성
   modbus_mapping_t* mb_map = modbus_mapping_new(
     /*nb_bits=*/0,
     /*nb_input_bits=*/0,
@@ -32,7 +29,6 @@ int main() {
 
   uint8_t query[MODBUS_RTU_MAX_ADU_LENGTH];
 
-  // 3) 요청-응답 루프
   while (true) {
     int rc = modbus_receive(ctx, query);
     if (rc > 0) {
@@ -53,12 +49,10 @@ int main() {
         }
         std::cout << "\n";
       }
-      // 자동 응답
       modbus_reply(ctx, query, rc, mb_map);
     }
   }
 
-  // (실제로는 무한루프지만 예시로)
   modbus_mapping_free(mb_map);
   mb.close(ctx);
   return 0;
