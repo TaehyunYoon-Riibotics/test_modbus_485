@@ -13,12 +13,12 @@ mkdir -p build && cd build
 cmake ..
 cmake --build .
 
-# Example CLI command
-# Port: /dev/ttyS1, Slave ID: 1, Write Reg[20]=42, Read Reg[20]
-./modbus_example /dev/ttyS1 1 20 42
+# 터미널 A: 슬레이브 실행
+./modbus_slave
 
-# Only read Reg[10]
-./modbus_example /dev/ttyS1 1 20 42 10
+# 터미널 B: 마스터(쓰기+읽기) 실행
+./modbus_example /dev/ttyS1 1 20 42
+./modbus_example /dev/ttyS1 1 20 42 30
 ```
 🔧 RS-485 포트 활성화
 포트 권한 부여
