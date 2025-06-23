@@ -47,6 +47,11 @@ bool ModbusUtils::close(modbus_t*& ctx) {
   return true;
 }
 
+int ModbusUtils::getFd(modbus_t* ctx) {
+  if (!ensureCtx(ctx, "getFd")) return -1;
+  return ::modbus_get_socket(ctx);
+}
+
 int ModbusUtils::readRegisters(modbus_t* ctx,
                                int addr,
                                int nb,

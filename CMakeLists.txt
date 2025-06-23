@@ -37,13 +37,15 @@ target_link_libraries(modbus_example PRIVATE
   modbus_utils
 )
 
-# 슬레이브: 요청-응답용 실행 파일
-add_executable(modbus_slave src/modbus_slave.cpp)
-target_link_libraries(modbus_slave PRIVATE
-  ${LIBM_LIBRARIES}
+add_executable(modbus_slave
+  src/modbus_slave.cpp
+)
+target_link_libraries(modbus_slave
+  PRIVATE modbus_utils
 )
 
-# 송신기
-add_executable(serial_frame_test src/serial_frame_test.cpp)
-# 수신기
-add_executable(serial_frame_recv src/serial_frame_recv.cpp)
+add_executable(serial_can_test src/serial_can_test.cpp)
+target_link_libraries(serial_can_test PRIVATE modbus_utils)
+
+add_executable(serial_can_recv src/serial_can_recv.cpp)
+target_link_libraries(serial_can_recv PRIVATE modbus_utils)

@@ -55,6 +55,10 @@ class ModbusUtils {
   // 컨텍스트 닫기/해제, true on success
   bool close(modbus_t*& ctx);
 
+  // RTU 모드에서 내부 fd (termios 포트 디스크립터)를 반환
+  // ctx가 null 이거나 TCP 모드면 -1 반환
+  int getFd(modbus_t* ctx);
+
   // 홀딩 레지스터 읽기: addr부터 nb개, dest에 저장, 읽은 개수 or -1
   int  readRegisters(modbus_t* ctx,
                      int addr,
