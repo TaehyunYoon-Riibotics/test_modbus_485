@@ -59,14 +59,19 @@ int main(int argc, char** argv) {
     else if (fc == MODBUS_FC_WRITE_MULTIPLE_REGISTERS && rc >= 7) {
       int addr = (query[2] << 8) | query[3];
       int qty  = (query[4] << 8) | query[5];
-      std::cout << "[Slave] WRITE_MULTIPLE Reg[" << addr
-                << "] count=" << qty << ":";
-      for (int i = 0; i < qty && (addr+i)<mb_map->nb_registers; ++i) {
-        // the incoming values have already been placed by libmodbus
-        uint16_t v = mb_map->tab_registers[addr + i];
-        std::cout << " " << v;
-      }
-      std::cout << "\n";
+  std::cout << "[Slave] WRITE_MULTIPLE Reg[" << addr
+            << "] count=" << qty << ":";
+  // 0번 레지스터는 RPM (uint16) 그대로, 1번 레지스터는 angle (int16/100.0)
+  if (addr+0 < mb_map->nb_registers) {
+    uint16_t raw_rpm = mb_map->tab_registers[addr + 0];
+    std::cout << " RPM=" << raw_rpm;
+  }
+  if (addr+1 < mb_map->nb_registers) {
+    int16_t raw_ang = static_cast<int16_t>(mb_map->tab_registers[addr + 1]);
+    double ang_deg = raw_ang / 100.0;
+    std::cout << " Angle=" << ang_deg << "°";
+  }
+  std::cout << "\n";
     }
 
     // 5) 자동 응답: read 요청이든 write 확인이든
