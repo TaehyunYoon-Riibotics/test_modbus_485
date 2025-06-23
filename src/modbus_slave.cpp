@@ -36,7 +36,7 @@ int main() {
     int rc = modbus_receive(ctx, query);
     if (rc > 0) {
       // **WRITE SINGLE REGISTER** (Function Code 0x06)
-      if (query[1] == MODBUS_FC_WRITE_REGISTER && rc >= 6) {
+      if (query[1] == MODBUS_FC_WRITE_SINGLE_REGISTER && rc >= 6) {
         int addr  = (query[2] << 8) | query[3];
         int value = (query[4] << 8) | query[5];
         std::cout << "[Slave] Reg[" << addr << "] <= " << value << "\n";
