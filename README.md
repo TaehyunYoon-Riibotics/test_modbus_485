@@ -8,6 +8,9 @@ RS-485 터미널 설정 방법과 빌드·실행 절차는 아래와 같습니�
 ## 📦 빌드 & 실행
 
 ```
+sudo apt update
+sudo apt install libmodbus-dev pkg-config
+
 cd test_modbus_485
 mkdir -p build && cd build
 cmake ..
