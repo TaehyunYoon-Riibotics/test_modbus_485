@@ -16,11 +16,12 @@ int main() {
   }
 
   modbus_mapping_t* mb_map = modbus_mapping_new(
-    /*nb_bits=*/0,
-    /*nb_input_bits=*/0,
-    /*nb_regs=*/100,
-    /*nb_input_regs=*/0
+    /*nb_bits*/      3,
+    /*nb_input_bits*/0,
+    /*nb_regs*/     100,
+    /*nb_input_regs*/0
   );
+  
   assert(mb_map);
 
   std::cout << "Modbus RTU Slave: " << device
