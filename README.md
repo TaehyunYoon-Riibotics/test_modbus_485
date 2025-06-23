@@ -21,8 +21,8 @@ cmake --build .
 ./modbus_slave
 
 # 터미널 B: 마스터(쓰기+읽기) 실행
-./modbus_example /dev/ttyS1 1 20 42
-./modbus_example /dev/ttyS1 1 20 42 30
+./modbus_example /dev/ttyS0 1 20 42
+./modbus_example /dev/ttyS0 1 20 42 30
 ```
 🔧 RS-485 포트 활성화
 포트 권한 부여
