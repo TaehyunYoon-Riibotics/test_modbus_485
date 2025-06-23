@@ -1,4 +1,4 @@
-// src/serial_modbus_slave.cpp
+// serial_modbus_slave.cpp
 
 #include "modbus_utils.h"
 
@@ -7,8 +7,10 @@
 #include <cstdint>
 
 #ifndef MODBUS_FC_WRITE_SINGLE_REGISTER
-# define MODBUS_FC_WRITE_SINGLE_REGISTER 0x06
-# define MODBUS_FC_WRITE_MULTIPLE_REGISTERS 0x10
+# define MODBUS_FC_WRITE_SINGLE_REGISTER       0x06
+# define MODBUS_FC_WRITE_MULTIPLE_REGISTERS   0x10
+# define MODBUS_FC_WRITE_SINGLE_COIL          0x05
+# define MODBUS_FC_WRITE_MULTIPLE_COILS       0x0F
 #endif
 
 int main(int argc, char** argv) {
@@ -38,45 +40,90 @@ int main(int argc, char** argv) {
 
   uint8_t query[MODBUS_RTU_MAX_ADU_LENGTH];
   while (true) {
-    // 3) 요청 대기
+    // 3) 요청 수신
     int rc = modbus_receive(ctx, query);
     if (rc <= 0) {
-      // 타임아웃 또는 에러
-      continue;
+      continue;  // 타임아웃 또는 에러
     }
 
     uint8_t fc = query[1];
-    if (fc == MODBUS_FC_WRITE_SINGLE_REGISTER && rc >= 6) {
-      int addr  = (query[2] << 8) | query[3];
-      int value = (query[4] << 8) | query[5];
-      if (addr >= 0 && addr < mb_map->nb_registers) {
-        mb_map->tab_registers[addr] = value;
-        std::cout << "[Slave] WRITE_SINGLE Reg[" << addr << "] = " << value << "\n";
+    switch (fc) {
+      case MODBUS_FC_WRITE_SINGLE_REGISTER: {
+        if (rc >= 6) {
+          int addr  = (query[2] << 8) | query[3];
+          int value = (query[4] << 8) | query[5];
+          if (addr < mb_map->nb_registers) {
+            mb_map->tab_registers[addr] = value;
+            std::cout << "[Slave] WRITE_SINGLE Reg[" << addr 
+                      << "] = " << value << "\n";
+          }
+        }
+        break;
       }
-    }
-    else if (fc == MODBUS_FC_WRITE_MULTIPLE_REGISTERS && rc >= 7) {
-      int addr = (query[2] << 8) | query[3];
-      int qty  = (query[4] << 8) | query[5];
-      std::cout << "[Slave] WRITE_MULTIPLE Reg[" << addr
-                << "] count=" << qty << ":";
-      // regs[0] = RPM, regs[1] = angle
-      if (addr + 0 < mb_map->nb_registers) {
-        uint16_t raw_rpm = mb_map->tab_registers[addr + 0];
-        std::cout << " RPM=" << raw_rpm;
+
+      case MODBUS_FC_WRITE_MULTIPLE_REGISTERS: {
+        if (rc >= 7) {
+          int addr = (query[2] << 8) | query[3];
+          int qty  = (query[4] << 8) | query[5];
+          std::cout << "[Slave] WRITE_MULTIPLE Reg[" << addr
+                    << "] count=" << qty << ":";
+          if (addr + 0 < mb_map->nb_registers) {
+            uint16_t rpm_raw = mb_map->tab_registers[addr + 0];
+            std::cout << " RPM=" << rpm_raw;
+          }
+          if (addr + 1 < mb_map->nb_registers) {
+            int16_t ang_raw = static_cast<int16_t>(mb_map->tab_registers[addr + 1]);
+            std::cout << " Angle=" << (ang_raw/100.0) << "°";
+          }
+          std::cout << "\n";
+        }
+        break;
       }
-      if (addr + 1 < mb_map->nb_registers) {
-        int16_t raw_ang = static_cast<int16_t>(mb_map->tab_registers[addr + 1]);
-        double ang_deg = raw_ang / 100.0;
-        std::cout << " Angle=" << ang_deg << "°";
+
+      case MODBUS_FC_WRITE_SINGLE_COIL: {
+        if (rc >= 6) {
+          int addr   = (query[2] << 8) | query[3];
+          int status = (query[4] == 0xFF) ? 1 : 0;
+          if (addr < mb_map->nb_bits) {
+            mb_map->tab_bits[addr] = status;
+            std::cout << "[Slave] WRITE_SINGLE_COIL Co[" << addr 
+                      << "] = " << status << "\n";
+          }
+        }
+        break;
       }
-      std::cout << "\n";
+
+      case MODBUS_FC_WRITE_MULTIPLE_COILS: {
+        if (rc >= 7) {
+          int addr = (query[2] << 8) | query[3];
+          int qty  = (query[4] << 8) | query[5];
+          std::cout << "[Slave] WRITE_MULTIPLE_COILS Co[" << addr
+                    << "] count=" << qty << ":";
+          for (int i = 0; i < qty && (addr+i) < mb_map->nb_bits; ++i) {
+            std::cout << " " << int(mb_map->tab_bits[addr + i]);
+          }
+          std::cout << "\n";
+        }
+        break;
+      }
+
+      default:
+        // read 요청 등은 modbus_reply()가 자동 처리
+        break;
     }
 
-    // 4) 자동 응답 (read 요청이든 write 확인이든)
+    // 4) 항상 4개 코일 상태 출력
+    std::cout << "[Slave] Coils: "
+              << "valid="   << int(mb_map->tab_bits[0]) << ", "
+              << "fwd="     << int(mb_map->tab_bits[1]) << ", "
+              << "bwd="     << int(mb_map->tab_bits[2]) << ", "
+              << "enable="  << int(mb_map->tab_bits[3]) << "\n";
+
+    // 5) 자동 응답
     modbus_reply(ctx, query, rc, mb_map);
   }
 
-  // (도달하지 않음)
+  // 도달하지 않음
   modbus_mapping_free(mb_map);
   mb.close(ctx);
   return 0;
