@@ -23,6 +23,12 @@ cmake --build .
 # 터미널 B: 마스터(쓰기+읽기) 실행
 ./modbus_example /dev/ttyS0 1 20 42
 ./modbus_example /dev/ttyS0 1 20 42 30
+
+# CAN SendDriveCommand 모사 테스트
+# 터미널 A) 수신기 실행
+./serial_can_recv /dev/ttyS0
+# 터미널 B) 송신기 실행
+./serial_can_test /dev/ttyS0
 ```
 🔧 RS-485 포트 활성화
 포트 권한 부여
