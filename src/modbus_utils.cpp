@@ -5,9 +5,6 @@
 #include <cerrno>
 #include <iostream>
 #include <sys/ioctl.h>
-#ifdef __linux__
-#  include <linux/serial.h>
-#endif
 
 using namespace test_modbus_485;
 
@@ -51,28 +48,6 @@ bool ModbusUtils::openRTU(modbus_t*& ctx_out,
     ctx_out = nullptr;
     return false;
   }
-
-  // 5) RS-485 자동 DE/RE 토글 설정 (Linux 전용)
-#ifdef __linux__
-  {
-    int fd = ::modbus_get_socket(ctx_out);
-    if (fd >= 0) {
-      struct serial_rs485 rs;
-      if (ioctl(fd, TIOCGRS485, &rs) >= 0) {
-        rs.flags |= SER_RS485_ENABLED
-                 |  SER_RS485_RTS_ON_SEND
-                 |  SER_RS485_RTS_AFTER_SEND;
-        rs.delay_rts_before_send = 0;
-        rs.delay_rts_after_send  = 0;
-        if (ioctl(fd, TIOCSRS485, &rs) < 0) {
-          perror("[openRTU] TIOCSRS485");
-        }
-      } else {
-        perror("[openRTU] TIOCGRS485");
-      }
-    }
-  }
-#endif
 
   return true;
 }
