@@ -36,3 +36,9 @@ target_include_directories(modbus_example PRIVATE
 target_link_libraries(modbus_example PRIVATE
   modbus_utils
 )
+
+# 슬레이브: 요청-응답용 실행 파일
+add_executable(modbus_slave src/modbus_slave.cpp)
+target_link_libraries(modbus_slave PRIVATE
+  ${LIBM_LIBRARIES}
+)
