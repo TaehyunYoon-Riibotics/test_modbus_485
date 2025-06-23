@@ -8,23 +8,23 @@ cmake --build .
 ./modbus_slave
 
 # 터미널 B: 마스터(쓰기+읽기) 실행
-./modbus_example /dev/ttyS1 1 20 42
-./modbus_example /dev/ttyS1 1 20 42 30
+./modbus_example /dev/ttyS0 1 20 42
+./modbus_example /dev/ttyS0 1 20 42 30
 
 # 1) 포트 권한 부여 (일반 사용자라면)
 sudo usermod -aG dialout $USER
 # 또는 임시로
-sudo chmod 666 /dev/ttyS1
+sudo chmod 666 /dev/ttyS0
 
 # 2) baud/parity/data/stop/raw 모드 설정
-sudo stty -F /dev/ttyS1 115200 cs8 -cstopb -parenb raw -ixon -ixoff
+sudo stty -F /dev/ttyS0 115200 cs8 -cstopb -parenb raw -ixon -ixoff
 
 # 3) RS-485 자동 DE/RE 토글 설정 (sysfs 이용)
-echo 1 | sudo tee /sys/class/tty/ttyS1/device/rs485/enabled
-echo 0 | sudo tee /sys/class/tty/ttyS1/device/rs485/rts_active_low
-echo 1 | sudo tee /sys/class/tty/ttyS1/device/rs485/rts_after_send
-echo 0 | sudo tee /sys/class/tty/ttyS1/device/rs485/rts_before_send
-echo 0 | sudo tee /sys/class/tty/ttyS1/device/rs485/rx_during_tx
+echo 1 | sudo tee /sys/class/tty/ttyS0/device/rs485/enabled
+echo 0 | sudo tee /sys/class/tty/ttyS0/device/rs485/rts_active_low
+echo 1 | sudo tee /sys/class/tty/ttyS0/device/rs485/rts_after_send
+echo 0 | sudo tee /sys/class/tty/ttyS0/device/rs485/rts_before_send
+echo 0 | sudo tee /sys/class/tty/ttyS0/device/rs485/rx_during_tx
 */
 
 #ifndef MODBUS_UTILS_H

@@ -6,7 +6,7 @@
 
 int main() {
   // 1) RTU 슬레이브(ID=1) 포트 열기
-  modbus_t* ctx = modbus_new_rtu("/dev/ttyS1", 115200, 'N', 8, 1);
+  modbus_t* ctx = modbus_new_rtu("/dev/ttyS0", 115200, 'N', 8, 1);
   assert(ctx);
   if (modbus_set_slave(ctx, 1) == -1 || modbus_connect(ctx) == -1) {
     std::cerr << "Slave 초기화 실패\n";
@@ -17,7 +17,7 @@ int main() {
   modbus_mapping_t* mb_map = modbus_mapping_new(0, 0, 100, 0);
   assert(mb_map);
 
-  std::cout << "Modbus RTU Slave: /dev/ttyS1, ID=1, 대기중...\n";
+  std::cout << "Modbus RTU Slave: /dev/ttyS0, ID=1, 대기중...\n";
   uint8_t query[MODBUS_RTU_MAX_ADU_LENGTH];
 
   // 3) 요청-응답 루프

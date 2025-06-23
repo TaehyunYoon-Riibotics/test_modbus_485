@@ -6,8 +6,8 @@ static void usage(const char* prog) {
   std::cout << "Usage:\n"
                "  " << prog << " DEVICE SLAVE_ID WRITE_ADDR WRITE_VALUE [READ_ADDR]\n\n"
                "Examples:\n"
-               "  " << prog << " /dev/ttyS1 1 20 42        # Reg[20]=42 쓰기 후 Reg[20] 읽기\n"
-               "  " << prog << " /dev/ttyS1 1 20 42 10    # Reg[20]=42 쓰기, Reg[10] 읽기\n";
+               "  " << prog << " /dev/ttyS0 1 20 42        # Reg[20]=42 쓰기 후 Reg[20] 읽기\n"
+               "  " << prog << " /dev/ttyS0 1 20 42 10    # Reg[20]=42 쓰기, Reg[10] 읽기\n";
 }
 
 int main(int argc, char** argv) {
