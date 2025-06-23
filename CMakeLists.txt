@@ -43,7 +43,5 @@ target_link_libraries(modbus_slave PRIVATE
   ${LIBM_LIBRARIES}
 )
 
-# 송신기
-add_executable(serial_frame_test src/serial_frame_test.cpp)
-# 수신기
-add_executable(serial_frame_recv src/serial_frame_recv.cpp)
+add_executable(serial_can_test    src/serial_can_test.cpp)
+add_executable(serial_can_recv    src/serial_can_recv.cpp)
