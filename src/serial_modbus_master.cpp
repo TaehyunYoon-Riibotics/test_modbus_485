@@ -140,6 +140,27 @@ int main(int argc, char** argv) {
             << "  readRegisters():    " << avg_rd_regs  << " ms\n"
             << "  readCoils():        " << avg_rd_coils << " ms\n";
 
+  {
+    // 30번 반복하여 평균 측정
+    const int reps = 30;
+    std::vector<uint16_t> big_regs(40, 0xABCD);  // 예: 모두 0xABCD
+    msd t_big_write{0};
+    for (int r = 0; r < reps; ++r) {
+      auto tb0 = clock::now();
+      int rc = mb.writeRegisters(ctx, 30, big_regs);
+      auto tb1 = clock::now();
+      t_big_write += msd(tb1 - tb0);
+      if (rc < 0) {
+        std::cerr << "[Master] Large write failed on rep " << r << "\n";
+      }
+    }
+    double avg_big = t_big_write.count() / reps;
+    std::cout << "\n[Master] 80-byte write x" << reps
+              << " average: " << std::fixed << std::setprecision(3)
+              << avg_big << " ms\n";
+  }
+  // ──────────────────────────────────────────────────────────────────────
+
   mb.close(ctx);
   return 0;
 }
