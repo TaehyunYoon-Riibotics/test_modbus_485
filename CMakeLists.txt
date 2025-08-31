@@ -26,24 +26,6 @@ target_link_libraries(modbus_utils PUBLIC
   ${LIBM_LIBRARIES}
 )
 
-# 예제 실행 파일
-add_executable(modbus_example src/main.cpp)
-
-target_include_directories(modbus_example PRIVATE
-  ${PROJECT_SOURCE_DIR}/include
-)
-
-target_link_libraries(modbus_example PRIVATE
-  modbus_utils
-)
-
-add_executable(modbus_slave
-  src/modbus_slave.cpp
-)
-target_link_libraries(modbus_slave
-  PRIVATE modbus_utils
-)
-
 add_executable(serial_modbus_master src/serial_modbus_master.cpp)
 target_link_libraries(serial_modbus_master PRIVATE modbus_utils)
 
